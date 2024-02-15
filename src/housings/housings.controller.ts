@@ -19,6 +19,11 @@ export class HousingsController {
     return this.housingsService.findAll();
   }
 
+  @Get('full')
+  findAllFull() {
+    return this.housingsService.findAllFull();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.housingsService.findOne(+id);

@@ -1,17 +1,14 @@
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreateHousingDto } from './dto/create-housing.dto';
 import { UpdateHousingDto } from './dto/update-housing.dto';
-import { Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Housing } from './entities/housing.entity';
-import { Res } from '@nestjs/common';
-import { Response } from 'express';
+
+
 
 @Injectable()
 export class HousingsService {
-  constructor(@InjectRepository(Housing) private housingRepository:Repository<Housing>){}
   
   async create(createHousingDto: CreateHousingDto) {
+    /*
     const {owner_full_name, owner_birthday, owner_cpf} = createHousingDto
    
       const data = this.housingRepository.create({
@@ -29,11 +26,12 @@ export class HousingsService {
       }
 
 
-
+*/
 
   }
 
   async findAll() {
+   /*
     try{
       const query = await this.housingRepository.find()
       return query
@@ -42,17 +40,49 @@ export class HousingsService {
       console.log(error)
       throw new InternalServerErrorException('Parece que algo deu errado em sua consulta, tente novamente mais tarde')
     }
+    */
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} housing`;
+  async findOne(id: number) {
+   /*
+    try{
+      const query = await this.housingRepository.find({ where: {id}})
+      return query
+
+    }catch(error){
+      console.log(error)
+      throw new InternalServerErrorException('Parece que algo deu errado em sua consulta, tente novamente mais tarde')
+    }
+    */
   }
 
-  update(id: number, updateHousingDto: UpdateHousingDto) {
-    return `This action updates a #${id} housing`;
+  async update(id: number, updateHousingDto: UpdateHousingDto) {
+    /*
+    const {owner_full_name, owner_birthday, owner_cpf} = updateHousingDto
+
+    try{
+      const query = await this.housingRepository
+      .createQueryBuilder()
+      .update()
+      .set({
+        owner_full_name,
+        owner_birthday, 
+        owner_cpf
+      })
+      .where("id = :id", { id })
+      .execute()
+
+      return {"status":200, "statusText":"Registro Alterado com sucesso!"}
+
+    }catch(error){
+      console.log(error)
+      throw new InternalServerErrorException('Parece que algo deu errado em sua consulta, tente novamente mais tarde')
+    }
+    */
   }
 
   async remove(id: number) {
+    /*
     try{
       const query  = await this.housingRepository.createQueryBuilder()
       .delete()
@@ -64,5 +94,23 @@ export class HousingsService {
     }catch(error){
       throw new BadRequestException(error.message)
     }
+    */
+  }
+
+  async findAllFull() {
+   /*
+    try{
+      const query = await this.housingRepository
+      .createQueryBuilder('housings')
+      .leftJoinAndSelect(Peoples,'people','people.housingId')
+      .getMany()
+      //.find({relations:{peoples:true, requests:true, finances:true, location:true }})
+      return query
+
+    }catch(error){
+      console.log(error)
+      throw new InternalServerErrorException('Parece que algo deu errado em sua consulta, tente novamente mais tarde')
+    }
+    */
   }
 }

@@ -1,11 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, OneToMany, JoinColumn } from 'typeorm';
 import { Locations } from './locations.entity';
 import { Finance } from 'src/finances/entities/finance.entity';
 import { Request } from 'src/requests/entities/request.entity';
 import { Peoples } from 'src/peoples/entities/people.entity';
 
 @Entity({
-    name:'housing'
+    name:'housings'
 })
 export class Housing {
     @PrimaryGeneratedColumn()

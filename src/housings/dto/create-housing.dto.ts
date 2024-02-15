@@ -1,4 +1,4 @@
-import { isDate, IsString, Length } from "class-validator";
+import { IsString, Length } from "class-validator";
 
 export class CreateHousingDto {
     

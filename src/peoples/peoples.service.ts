@@ -1,11 +1,32 @@
 import { Injectable } from '@nestjs/common';
 import { CreatePeopleDto } from './dto/create-people.dto';
 import { UpdatePeopleDto } from './dto/update-people.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Peoples } from './entities/people.entity';
+import { BadRequestException } from '@nestjs/common';
 
 @Injectable()
 export class PeoplesService {
-  create(createPeopleDto: CreatePeopleDto) {
-    return 'This action adds a new people';
+  async create(createPeopleDto: CreatePeopleDto) {
+    /*
+    const {full_name, housing, cpf, type} = createPeopleDto
+   
+      const data = this.peoplesRepository.create({
+        full_name,
+        cpf,
+        type
+      })
+
+      try{
+        const save = await this.peoplesRepository.save(data)
+        return {"status":201, "statusText":"Registro Inserido com sucesso!"}
+      }catch(error){
+        console.log(error)
+        throw new BadRequestException(error.sqlMessage)
+      }
+      */
+
   }
 
   findAll() {
