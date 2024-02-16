@@ -2,6 +2,8 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { PeoplesService } from './peoples.service';
 import { CreatePeopleDto } from './dto/create-people.dto';
 import { UpdatePeopleDto } from './dto/update-people.dto';
+import { UseInterceptors, UploadedFile } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('/peoples')
@@ -9,9 +11,10 @@ import { ApiTags } from '@nestjs/swagger';
 export class PeoplesController {
   constructor(private readonly peoplesService: PeoplesService) {}
 
+  @UseInterceptors(FileInterceptor('file'))
   @Post()
-  create(@Body() createPeopleDto: CreatePeopleDto) {
-    return this.peoplesService.create(createPeopleDto);
+  create(@Body() createPeopleDto: CreatePeopleDto, @UploadedFile() file: Express.Multer.File) {
+    return this.peoplesService.create(createPeopleDto, file);
   }
 
   @Get()

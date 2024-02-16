@@ -1,4 +1,4 @@
-import { IsString, IsNumber } from "class-validator";
+import { IsString, IsNumber, IsOptional } from "class-validator";
 
 export class CreatePeopleDto {
 
@@ -12,5 +12,6 @@ export class CreatePeopleDto {
     type:string;
 
     @IsNumber()
-    housing:number;
+    @IsOptional()
+    housingId?:number;
 }

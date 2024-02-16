@@ -3,12 +3,20 @@ import { CreatePeopleDto } from './dto/create-people.dto';
 import { UpdatePeopleDto } from './dto/update-people.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Peoples } from './entities/people.entity';
 import { BadRequestException } from '@nestjs/common';
+import { writeFile } from 'fs/promises';
+import { join } from 'path';
 
 @Injectable()
 export class PeoplesService {
-  async create(createPeopleDto: CreatePeopleDto) {
+  async create(createPeopleDto: CreatePeopleDto, file:Express.Multer.File) {
+
+    const upload = await writeFile(join(__dirname, '../','../','storage','file.jpg'),file.buffer)
+    console.log(join(__dirname, '../','../','storage','file.jpg'))
+    console.log(upload)
+    return {createPeopleDto, upload}
+
+
     /*
     const {full_name, housing, cpf, type} = createPeopleDto
    
