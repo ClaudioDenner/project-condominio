@@ -1,4 +1,4 @@
-import { IsString, Length } from "class-validator";
+import { IsNumber, IsString, Length } from "class-validator";
 
 export class CreateHousingDto {
     
@@ -11,6 +11,12 @@ export class CreateHousingDto {
     @IsString()
     @Length(11)
     owner_cpf:string;
+
+    @IsNumber()
+    authId:number
+
+    @IsNumber()
+    locationId:number
 
 
 }

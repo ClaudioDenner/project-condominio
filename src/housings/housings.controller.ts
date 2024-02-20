@@ -1,10 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { HousingsService } from './housings.service';
 import { CreateHousingDto } from './dto/create-housing.dto';
 import { UpdateHousingDto } from './dto/update-housing.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Roles } from 'src/auth/decorators/role.decorator';
+import { Role } from 'src/auth/enuns/role.enum';
 
 @ApiTags('/housings')
+@UseGuards(AuthGuard, RolesGuard)
+@Roles(Role.Admin)
 @Controller('housings')
 export class HousingsController {
   constructor(private readonly housingsService: HousingsService) {}
@@ -13,7 +19,7 @@ export class HousingsController {
   create(@Body() createHousingDto: CreateHousingDto) {
     return this.housingsService.create(createHousingDto);
   }
-
+//
   @Get()
   findAll() {
     return this.housingsService.findAll();

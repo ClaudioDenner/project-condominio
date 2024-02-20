@@ -13,7 +13,7 @@ export class PeoplesService {
 
     const upload = await writeFile(join(__dirname, '../','../','storage','file.jpg'),file.buffer)
     console.log(join(__dirname, '../','../','storage','file.jpg'))
-    console.log(upload)
+    //const pathName = join('storage',)
     return {createPeopleDto, upload}
 
 

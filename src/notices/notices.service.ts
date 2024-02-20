@@ -7,14 +7,24 @@ import { InternalServerErrorException, BadRequestException } from '@nestjs/commo
 export class NoticesService {
   constructor(private prisma: PrismaService) {}
 
-  create(createNoticeDto: CreateNoticeDto) {
-    return 'This action adds a new notice';
+  async create(createNoticeDto: CreateNoticeDto, auth:number) {
+
+    const {title, body} = createNoticeDto
+
+    try{
+      const query = await this.prisma.notices.create({
+        data:{title, body, author:auth}
+      })
+      return {query}
+    }catch(err){
+      throw new InternalServerErrorException(err)
+    }
   }
 
   async findAll() {
     try{
       const query = await this.prisma.notices.findMany()
-      return query
+      return {query}
     }catch(error){
       console.log(error)
       throw new InternalServerErrorException()
@@ -23,6 +33,7 @@ export class NoticesService {
   }
 
   async findOne(id: number) {
+
     try{
       const query = await this.prisma.notices.findUnique({where:{id}})
       return query
@@ -32,11 +43,27 @@ export class NoticesService {
     }
   }
 
-  update(id: number, updateNoticeDto: UpdateNoticeDto) {
-    return `This action updates a #${id} notice`;
+  async update(id: number, updateNoticeDto: UpdateNoticeDto) {
+    const {body, title} = updateNoticeDto
+    try{
+      const query = await this.prisma.notices.update({
+        where:{id},
+        data:{body, title}
+      })
+      return {query}
+    }catch(err){
+      throw new InternalServerErrorException(err)
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} notice`;
+  async remove(id: number) {
+    try{
+      const query = await this.prisma.notices.delete({
+        where:{id}
+      })
+      return {query}
+    }catch(err){
+      throw new InternalServerErrorException(err)
+    }
   }
 }

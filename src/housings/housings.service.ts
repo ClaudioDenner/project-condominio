@@ -1,116 +1,96 @@
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreateHousingDto } from './dto/create-housing.dto';
 import { UpdateHousingDto } from './dto/update-housing.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 
 
 @Injectable()
 export class HousingsService {
+  constructor(private prisma:PrismaService){}
   
-  async create(createHousingDto: CreateHousingDto) {
-    /*
-    const {owner_full_name, owner_birthday, owner_cpf} = createHousingDto
-   
-      const data = this.housingRepository.create({
-        owner_full_name, 
-        owner_birthday, 
-        owner_cpf
-      })
-
+  async create(createHousingDto: CreateHousingDto,) {
+    const {owner_full_name, owner_birthday, owner_cpf, authId, locationId} = createHousingDto
       try{
-        const save = await this.housingRepository.save(data)
-        return {"status":201, "statusText":"Registro Inserido com sucesso!"}
+        const query = await this.prisma.housings.create({
+          data:{
+            owner_full_name, 
+            owner_birthday, 
+            owner_cpf,
+            authId,
+            locationId
+          }
+        })
+        return {query}
       }catch(error){
-        console.log(error)
-        throw new BadRequestException(error.sqlMessage)
+        throw new InternalServerErrorException(error)
       }
-
-
-*/
-
   }
 
+
   async findAll() {
-   /*
     try{
-      const query = await this.housingRepository.find()
+      const query = await this.prisma.housings.findMany()
       return query
 
     }catch(error){
       console.log(error)
       throw new InternalServerErrorException('Parece que algo deu errado em sua consulta, tente novamente mais tarde')
     }
-    */
   }
 
   async findOne(id: number) {
-   /*
     try{
-      const query = await this.housingRepository.find({ where: {id}})
+      const query = await this.prisma.housings.findUniqueOrThrow({ where: {id}})
       return query
 
     }catch(error){
       console.log(error)
-      throw new InternalServerErrorException('Parece que algo deu errado em sua consulta, tente novamente mais tarde')
+      throw new BadRequestException(error.name)
     }
-    */
   }
 
   async update(id: number, updateHousingDto: UpdateHousingDto) {
-    /*
     const {owner_full_name, owner_birthday, owner_cpf} = updateHousingDto
-
     try{
-      const query = await this.housingRepository
-      .createQueryBuilder()
-      .update()
-      .set({
-        owner_full_name,
-        owner_birthday, 
-        owner_cpf
+      const query = await this.prisma.housings.update({
+        where:{id},
+        data:{owner_full_name, owner_birthday, owner_cpf}
       })
-      .where("id = :id", { id })
-      .execute()
-
-      return {"status":200, "statusText":"Registro Alterado com sucesso!"}
+      return {query}
 
     }catch(error){
-      console.log(error)
-      throw new InternalServerErrorException('Parece que algo deu errado em sua consulta, tente novamente mais tarde')
+      throw new BadRequestException(error.meta.cause)
     }
-    */
   }
 
   async remove(id: number) {
-    /*
+    
     try{
-      const query  = await this.housingRepository.createQueryBuilder()
-      .delete()
-      .where("id = :id", { id})
-      .execute()
-      console.log(query)
-      if(query.affected == 0) throw new Error('Nenhum registro removido')
-      return {"status":200, "statusText":"Registro apagado com sucesso!"}
+      const query  = await this.prisma.housings.delete({
+        where:{id}
+      })
+      return {query}
     }catch(error){
-      throw new BadRequestException(error.message)
+      throw new BadRequestException(error)
     }
-    */
+    
   }
 
   async findAllFull() {
-   /*
     try{
-      const query = await this.housingRepository
-      .createQueryBuilder('housings')
-      .leftJoinAndSelect(Peoples,'people','people.housingId')
-      .getMany()
-      //.find({relations:{peoples:true, requests:true, finances:true, location:true }})
-      return query
-
+      const query = await this.prisma.housings.findMany({
+        include:{
+          finances:true,
+          locations:true,
+          requests:true,
+          peoples:true
+        }
+      })
+      return {query}
     }catch(error){
       console.log(error)
       throw new InternalServerErrorException('Parece que algo deu errado em sua consulta, tente novamente mais tarde')
     }
-    */
   }
 }
