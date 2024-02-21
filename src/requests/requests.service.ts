@@ -1,26 +1,66 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreateRequestDto } from './dto/create-request.dto';
 import { UpdateRequestDto } from './dto/update-request.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class RequestsService {
-  create(createRequestDto: CreateRequestDto) {
-    return 'This action adds a new request';
+  constructor(private prisma:PrismaService){}
+
+  async create(createRequestDto: CreateRequestDto, housingId:number) {
+    const { title, description } = createRequestDto
+   try{
+    
+    const query = await this.prisma.requests.create({
+      data:{
+        title, 
+        description,
+        housingId
+        
+      }
+    })
+
+    return {query}
+    
+   }catch(err){
+      throw new InternalServerErrorException(err)
+   }
   }
 
-  findAll() {
-    return `This action returns all requests`;
+  async findAll() {
+    try{
+      const query = await this.prisma.requests.findMany()
+      return {query}
+    }catch(err){
+      throw new InternalServerErrorException(err)
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} request`;
+  async findOne(id: number) {
+    try{
+      const query = await this.prisma.requests.findUniqueOrThrow({where:{id}})
+      return {query}
+    }catch(err){
+      throw new InternalServerErrorException(err)
+    }
   }
 
-  update(id: number, updateRequestDto: UpdateRequestDto) {
-    return `This action updates a #${id} request`;
+  async update(id: number, updateRequestDto: UpdateRequestDto) {
+    const {description, title} = updateRequestDto
+    try{
+      const query = await this.prisma.requests.update({where:{id}, data:{title, description}})
+      return {query}
+    }catch(err){
+      throw new InternalServerErrorException(err)
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} request`;
+  async remove(id: number) {
+    try{
+      const query = await this.prisma.requests.delete({where:{id}})
+      return {query}
+    }catch(err){
+      throw new InternalServerErrorException(err)
+    }
   }
 }

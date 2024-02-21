@@ -14,21 +14,20 @@ export class AuthService {
   async login(email:string, pass:string) {
 
     try{
-      const query = await this.prisma.auth.findUniqueOrThrow({where:{login:email}})
-
+      const query = await this.prisma.auth.findUniqueOrThrow({where:{login:email}, include:{housings:true}})
+      
       const compare = await bcrypt.compare(pass, query.password)
       if(!compare) throw new Error()
+      return this.createToken(query.id, query.login, query.permission, query.name, query.housings[0].id)
     
-      return this.createToken(query.id, query.login, query.permission, query.name)
-      
     }catch(error){
       console.log(error)
       throw new BadRequestException('Credenciais não encontradas ou incorretas')
   }
 }
-  async createToken(id:number, login:string, permission:string, name:string){
+  async createToken(id:number, login:string, permission:string, name:string, housingId:number){
     try{
-      const token = await this.jwtService.signAsync({id, login, permission, name}, {secret: jwtConstants.secret, expiresIn: '7 days'})
+      const token = await this.jwtService.signAsync({id, login, permission, name, housingId}, {secret: jwtConstants.secret, expiresIn: '7 days'})
       return {token}
     }catch(error){
       return new InternalServerErrorException(error)
