@@ -1,10 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
 import { FinancesService } from './finances.service';
 import { CreateFinanceDto } from './dto/create-finance.dto';
 import { UpdateFinanceDto } from './dto/update-finance.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Roles } from 'src/auth/decorators/role.decorator';
+import { Role } from 'src/auth/enuns/role.enum';
 
 @ApiTags('/finaces')
+@UseGuards(AuthGuard, RolesGuard)
+@Roles(Role.Admin)
 @Controller('finances')
 export class FinancesController {
   constructor(private readonly financesService: FinancesService) {}
@@ -17,6 +23,12 @@ export class FinancesController {
   @Get()
   findAll() {
     return this.financesService.findAll();
+  }
+
+  @Get('user')
+  @Roles(Role.User)
+  findAllForUser(@Req() request) {
+    return this.financesService.findAllForUser(request.user.housingId);
   }
 
   @Get(':id')

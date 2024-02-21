@@ -1,55 +1,101 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreatePeopleDto } from './dto/create-people.dto';
 import { UpdatePeopleDto } from './dto/update-people.dto';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { BadRequestException } from '@nestjs/common';
-import { writeFile } from 'fs/promises';
+import { writeFile, mkdir, stat} from 'fs/promises';
 import { join } from 'path';
+import { existsSync, mkdirSync } from  'fs'
+import { PrismaService } from 'src/prisma/prisma.service';
+
 
 @Injectable()
 export class PeoplesService {
-  async create(createPeopleDto: CreatePeopleDto, file:Express.Multer.File) {
+  constructor(private prisma:PrismaService){}
 
-    const upload = await writeFile(join(__dirname, '../','../','storage','file.jpg'),file.buffer)
-    console.log(join(__dirname, '../','../','storage','file.jpg'))
-    //const pathName = join('storage',)
-    return {createPeopleDto, upload}
+  async create(createPeopleDto: CreatePeopleDto, file:Express.Multer.File, housingId:number) {
+    
+    const {full_name, cpf, type} = createPeopleDto
+    const getId = await this.prisma.peoples.findFirst({orderBy:{id:'desc'}})
+    const id = getId === null ? 1 : getId.id + 1
 
+    const pathBucket = join('storage',`housingId${housingId}`,`peopleId${id}`)
+    const pathDocument = join(__dirname,'../','../',pathBucket )
+    const fileName = file.originalname
 
-    /*
-    const {full_name, housing, cpf, type} = createPeopleDto
-   
-      const data = this.peoplesRepository.create({
-        full_name,
-        cpf,
-        type
+    if(!existsSync(pathDocument)){
+      mkdirSync(pathDocument)
+    }
+
+    await writeFile(join(pathDocument,fileName),file.buffer)
+
+    try{
+      const query = await this.prisma.peoples.create({
+        data:{
+          id,
+          full_name,
+          cpf,
+          pathDocument:pathBucket,
+          type,
+          housingId
+        }
       })
+      //const {full_name, type } = query
+      return {msg:`O cadastro ${query.type} de ${query.full_name} foi criado com sucesso!`}
+    }catch(err){
+      throw new BadRequestException(err)
+    }
+  }
+    
 
-      try{
-        const save = await this.peoplesRepository.save(data)
-        return {"status":201, "statusText":"Registro Inserido com sucesso!"}
-      }catch(error){
-        console.log(error)
-        throw new BadRequestException(error.sqlMessage)
-      }
-      */
-
+  async findAll() {
+    try{
+      const query = await this.prisma.peoples.findMany()
+      return {query}
+    }catch(err){
+      throw new InternalServerErrorException(err)
+    }
   }
 
-  findAll() {
-    return `This action returns all peoples`;
+
+  async findAllForUser(housingId:number) {
+    try{
+      const query = await this.prisma.peoples.findMany({where:{housingId}})
+      return {query}
+    }catch(err){
+      throw new InternalServerErrorException(err)
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} people`;
+  async findOne(id: number) {
+    try{
+      const query = await this.prisma.peoples.findUniqueOrThrow({where:{id}})
+      return {query}
+    }catch(err){
+      throw new InternalServerErrorException(err)
+    }
   }
 
-  update(id: number, updatePeopleDto: UpdatePeopleDto) {
-    return `This action updates a #${id} people`;
+  async update(id: number, updatePeopleDto: UpdatePeopleDto) {
+    const {full_name, cpf, type} = updatePeopleDto
+    try{
+      const query = await this.prisma.peoples.update({
+        where:{id},
+        data:{
+          full_name, cpf, type
+        }
+      })
+      return {msg:"registro alterado com sucesso!"}
+    }catch(err){
+      throw new InternalServerErrorException(err)
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} people`;
+  async remove(id: number) {
+    try{
+      const query = await this.prisma.peoples.delete({where:{id}})
+      return {msg:"registro deletao com sucesso!"}
+    }catch(err){
+      throw new InternalServerErrorException(err)
+    }
   }
 }

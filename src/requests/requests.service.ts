@@ -36,6 +36,15 @@ export class RequestsService {
     }
   }
 
+  async findAllForUser(housingId:number) {
+    try{
+      const query = await this.prisma.requests.findMany({where:{housingId}})
+      return {query}
+    }catch(err){
+      throw new InternalServerErrorException(err)
+    }
+  }
+
   async findOne(id: number) {
     try{
       const query = await this.prisma.requests.findUniqueOrThrow({where:{id}})

@@ -10,7 +10,7 @@ datasource db {
 model finances {
   id            Int       @id @default(autoincrement())
   description   String    @db.VarChar(60)
-  ref           String    @db.VarChar(6)
+  reference     String    @db.VarChar(6)
   value         Float     @db.Float
   status        String    @default("pending") @db.VarChar(30)
   housingId     Int

@@ -23,9 +23,15 @@ export class RequestsController {
   }
   
   @Get()
-  @Roles(Role.Admin, Role.User)
+  @Roles(Role.Admin)
   findAll() {
     return this.requestsService.findAll();
+  }
+
+  @Get('user')
+  @Roles(Role.User)
+  findAllForUser(@Req() request) {
+    return this.requestsService.findAllForUser(request.user.housingId);
   }
   
   @Get(':id')

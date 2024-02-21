@@ -11,7 +11,4 @@ export class CreatePeopleDto {
     @IsString()
     type:string;
 
-    @IsNumber()
-    @IsOptional()
-    housingId?:number;
 }
